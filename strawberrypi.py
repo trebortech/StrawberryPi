@@ -63,7 +63,7 @@ def checkschedule():
     credentials = get_credentials()
     http = credentials.authorize(httplib2.Http())
     service = discovery.build('calendar', 'v3', http=http)
-    now = datetime.datetime.utcnow().isoformat() + 'Z' # 'Z' indicates UTC time
+    now = datetime.utcnow().isoformat() + 'Z' # 'Z' indicates UTC time
     eventsResult = service.events().list(
         calendarId=calendarid,
         timeMin=now,
@@ -89,9 +89,9 @@ def checkschedule():
                 return zonedict
 
         else:
-            return 'No jobs to run'
+            return {}
 
-    return ''
+    return {}
 
 
 # Water Zone

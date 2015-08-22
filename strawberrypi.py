@@ -3,7 +3,7 @@
 import sys
 import os
 import time
-import datetime
+from datetime import datetime
 import httplib2
 
 # google cal api libs
@@ -124,9 +124,32 @@ def main():
 
     zonedict = checkschedule()
 
-    
+    jobqueue = True
+    while jobqueue:
+        for zone in zonedict:
+            runtime = int(zonedict[zone])
 
+            if runtime < zoneinterval:
+                zonedict[zone] = runtime - zoneinterval
+                runtime = zoneinterval
+            else:
+                zonedict[zone] = 0
 
+            setZone(int(zone), 'ON')
+            time.sleep(int(runtime) * 60)
+            setZone(int(zone), 'OFF')
+
+        jobswaiting = 0
+        for zone in zonedict:
+            jobswaiting = jobswaiting + int(zonedict[zone])
+
+        if jobswaiting == 0:
+            jobqueue = False
+    shutdown()
+
+def shutdown():
+    os.remove(pidfilepath)
+    sys.exit()
 
 def createpidfile():
     pidfile = open(pidfilepath, 'w')
